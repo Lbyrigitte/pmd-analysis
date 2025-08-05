@@ -24,15 +24,12 @@ RUN curl -L -o pmd.zip https://github.com/pmd/pmd/releases/download/pmd_releases
     && rm pmd.zip
 
 
-# Set PMD permissions and path
-#RUN chmod +x /app/pmd/pmd-bin-7.15.0/bin/pmd && \
-    #chmod +x /app/pmd/pmd-bin-7.15.0/bin/pmd.bat
 
 # Set PMD path
 ENV PMD_HOME=/opt/pmd-bin-${PMD_VERSION}
 ENV PATH="$PMD_HOME/bin:$PATH"
 
-# clone  my github 
+# clone the remote git repository with analysis code 
 RUN git clone https://github.com/Lbyrigitte/pmd-analysis.git /app
 
 # Copy requirements file
