@@ -201,9 +201,10 @@ The *requirements.txt* :
 ### Execution
 
  **1. Docker run**
-``` 
+ 
 # 1.Run analysis to analyze remote repositories(Linux path example)
 **Outside the container**
+```
 docker run --rm \
 -v $(pwd)/output:/app/output \
 pmd-analyzer \
@@ -214,8 +215,9 @@ https://github.com/apache/commons-lang.git \
 --skip-download \
 --max-commits 10 \
 --verbose
-
+```
 **Inside the container(Should run in the container)**
+```
 python /app/main.py https://github.com/apache/commons-lang.git \
 --ruleset /opt/pmd-bin-7.15.0/rulesets/java/quickstart.xml \
 --output-dir /app/output \
@@ -223,7 +225,7 @@ python /app/main.py https://github.com/apache/commons-lang.git \
 --skip-download \
 --max-commits 10
 ```
-- **Parameters can be changed **
+- ** Parameters can be changed **
 **--max-commits** 
 **--ruleset (You can change the self-selected paramenters of the officiaol rulesets like: quickstart.xml, bestpractices.xml, codestyle.xml...etc)**
 
