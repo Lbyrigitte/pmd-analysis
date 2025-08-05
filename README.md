@@ -270,6 +270,7 @@ output/
 
 ## Performance
 **1.Target Performance**: ≤1 second/commit
+
 **2.Docker run**: ≤1 second/commit(0.6second with quickstart.xml)
 
 ## Image management
