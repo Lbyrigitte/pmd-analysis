@@ -222,7 +222,7 @@ def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
 
     stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
 
-    output_dict = {
+   summary = {
         "location": repo_info["location"],
         "stat_of_repository": {
             "number_of_commits": repo_info["commit_count"],
@@ -232,6 +232,6 @@ def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
         }
     }
 
-    return json.dumps(output_dict, indent=4)
+    return json.dumps(summary, indent=4)
 
    
