@@ -212,22 +212,26 @@ class SummaryGenerator:
             'average_clean_file_ratio': statistics.mean(file_quality_ratios) if file_quality_ratios else 0,
             'median_clean_file_ratio': statistics.median(file_quality_ratios) if file_quality_ratios else 0
         }
-    
-    def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
+    import json
+
+def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
     repo_info = summary['repository']
     java_stats = summary['java_files']
     warning_stats = summary['warnings']
     rule_stats = summary['rule_statistics']
-    
-    stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
-    
-    formatted = f'"location": "{repo_info["location"]}"\n'
-    formatted += '"stat_of_repository": {\n'
-    formatted += f'    "number_of_commits": {repo_info["commit_count"]},\n'
-    formatted += f'    "avg_of_num_java_files": {java_stats["average_count"]:.1f},\n'
-    formatted += f'    "avg_of_num_warnings": {warning_stats["average_count"]:.1f},\n'
-    formatted += f'    "stat_of_warnings": {stat_of_warnings}\n'
-    formatted += '}'
-    
-    return formatted
 
+    stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
+
+    output_dict = {
+        "location": repo_info["location"],
+        "stat_of_repository": {
+            "number_of_commits": repo_info["commit_count"],
+            "avg_of_num_java_files": round(java_stats["average_count"], 1),
+            "avg_of_num_warnings": round(warning_stats["average_count"], 1),
+            "stat_of_warnings": stat_of_warnings
+        }
+    }
+
+    return json.dumps(output_dict, indent=4)
+
+   
