@@ -165,7 +165,7 @@ def main():
         # Save summary file
         summary_path = output_path / "summary.json"
         with open(summary_path, 'w', encoding='utf-8') as f:
-            f.write(summary['formatted_summary])
+            f.write(json.dumps(summary,indent=4,ensure_acsii=False))
         
         # Calculate performance metrics
         end_time = time.time()
