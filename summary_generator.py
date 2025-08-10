@@ -214,21 +214,20 @@ class SummaryGenerator:
         }
     
     def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
-        """Generate the formatted summary as required by R8."""
-        repo_info = summary['repository']
-        java_stats = summary['java_files']
-        warning_stats = summary['warnings']
-        rule_stats = summary['rule_statistics']
-        
-        # Format warning statistics
-        warning_stats_formatted = {}
-        for rule, stats in rule_stats.items():
-            warning_stats_formatted[rule] = stats['total_violations']
-        
-        formatted = f'"location": "{repo_info["location"]}"\n'
-        formatted += f'"commit_count": {repo_info["commit_count"]}\n'
-        formatted += f'"average_java_files": {java_stats["average_count"]:.1f}\n'
-        formatted += f'"average_warnings": {warning_stats["average_count"]:.1f}\n'
-        formatted += f'"warning_statistics": {warning_stats_formatted}'
-        
-        return formatted
+    repo_info = summary['repository']
+    java_stats = summary['java_files']
+    warning_stats = summary['warnings']
+    rule_stats = summary['rule_statistics']
+    
+    stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
+    
+    formatted = f'"location": "{repo_info["location"]}"\n'
+    formatted += '"stat_of_repository": {\n'
+    formatted += f'    "number_of_commits": {repo_info["commit_count"]},\n'
+    formatted += f'    "avg_of_num_java_files": {java_stats["average_count"]:.1f},\n'
+    formatted += f'    "avg_of_num_warnings": {warning_stats["average_count"]:.1f},\n'
+    formatted += f'    "stat_of_warnings": {stat_of_warnings}\n'
+    formatted += '}'
+    
+    return formatted
+
