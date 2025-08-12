@@ -161,11 +161,12 @@ def main():
         summary = summary_generator.generate_summary(
             args.repository, results
         )
-        summary["formatted_summary"] = summary_generater.generate_formatted_summary(summary)
+        '''summary["formatted_summary"] = summary_generator.generate_formatted_summary(summary)
+        '''
         # Save summary file
         summary_path = output_path / "summary.json"
         with open(summary_path, 'w', encoding='utf-8') as f:
-            json.dump(summary['formatted_summary'], f, indent=4,ensure_acsii=False))
+            json.dump(summary['formatted_summary'], f, indent=4,ensure_ascii=False))
         
         # Calculate performance metrics
         end_time = time.time()
