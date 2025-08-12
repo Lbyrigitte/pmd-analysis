@@ -42,7 +42,7 @@ class SummaryGenerator:
         quality_metrics = self._calculate_quality_metrics(results)
         summary['quality_metrics'] = quality_metrics
         
-        # 关键：调用生成你想要结构的函数，赋值为字典
+        # 生成符合要求的格式
         summary['formatted_summary'] = self._generate_formatted_summary(summary)
         
         return summary
@@ -59,10 +59,12 @@ class SummaryGenerator:
             'warning_statistics': {},
             'formatted_summary': {
                 "location": repository_path,
-                "commit_count": 0,
-                "average_java_files": 0,
-                "average_warnings": 0,
-                "warning_statistics": {}
+                "stat_of_repository": {
+                    "number_of_commits": 0,
+                    "avg_of_num_java_files": 0,
+                    "avg_of_num_warnings": 0
+                },
+                "stat_of_warnings": {}
             }
         }
     
@@ -165,30 +167,16 @@ class SummaryGenerator:
         }
     
     def _generate_formatted_summary(self, summary: Dict[str, Any]) -> Dict[str, Any]:
-        repo_info = summary['repository']
-        java_stats = summary['java_files']
-        warning_stats = summary['warnings']
-        rule_stats = summary['rule_statistics']
-
-        stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
-
-        formatted = {
-            "location": repo_info["location"],
-            "analyzed_at": repo_info["analyzed_at"],
+        """Reformat summary to required nested structure with renamed keys."""
+        return {
+            "location": summary["repository"]["location"],
             "stat_of_repository": {
-                "number_of_commits": repo_info["commit_count"],
-                "avg_of_num_java_files": round(java_stats["average_count"], 1),
-                "avg_of_num_warnings": round(warning_stats["average_count"], 1),
-                "median_count": java_stats["median_count"],
-                "min_count": java_stats["min_count"],
-                "max_count": java_stats["max_count"],
-                "total_commits": java_stats["total_commits"],
-                "average_total_lines": java_stats["average_total_lines"],
-                "median_total_lines": java_stats["median_total_lines"],
+                "number_of_commits": summary["repository"]["commit_count"],
+                "avg_of_num_java_files": summary["java_files"]["average_count"],
+                "avg_of_num_warnings": summary["warnings"]["average_count"]
             },
-            "stat_of_warnings": warning_stats,
-            "temporal_trends": summary["temporal_trends"],
-            "rule_statistics": rule_stats,
-            "quality_metrics": summary["quality_metrics"],
+            "stat_of_warnings": {
+                k: v for k, v in summary["warnings"].items()
+                if k != "average_count"
+            }
         }
-        return formatted
