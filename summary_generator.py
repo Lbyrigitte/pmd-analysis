@@ -232,6 +232,6 @@ def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
         }
     }
 
-    return json.dumps(summary, indent=4)
+    return summary
 
    
