@@ -50,7 +50,7 @@ class SummaryGenerator:
                 'number_of_commits': len(results),
                 'avg_of_num_java_files':{'average_count': 0},
                 'avg_of_num_warnings': {'average_count': 0}
-            }
+            }        
         }        
         
         # Calculate Java file statistics
@@ -88,8 +88,6 @@ class SummaryGenerator:
                 'avg_of_num_java_files':{'average_count': 0},
                 'avg_of_num_warnings': {'average_count': 0}
             },
-            'java_files': {'average_count': 0},
-            'warnings': {'average_count': 0},
             'warning_statistics': {},
             'formatted_summary': f'"location": "{repository_path}"\n"number_of_commits": 0\n"avg_of_num_java_files": 0\n"avg_of_num_warnings": 0\n"warning_statistics": {{}}'
         }
@@ -234,4 +232,21 @@ class SummaryGenerator:
     formatted += '}'
     
     return formatted
-
+   '''
+    output_dict = {
+            'location': repository_path,
+            'stat_of_repository': {            
+                'analyzed_at': datetime.now().isoformat(),
+                'number_of_commits': len(results),
+                'avg_of_num_java_files':{'average_count': 0},
+                'avg_of_num_warnings': {'average_count': 0}
+            }
+    '''
+    return {
+            'location': repository_path,
+            'stat_of_repository': {            
+                'analyzed_at': datetime.now().isoformat(),
+                'number_of_commits': len(results),
+                'avg_of_num_java_files':{'average_count': 0},
+                'avg_of_num_warnings': {'average_count': 0}
+            },
