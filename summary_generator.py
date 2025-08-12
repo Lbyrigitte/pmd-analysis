@@ -214,7 +214,7 @@ class SummaryGenerator:
         }
     import json
 
-def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
+    def _generate_formatted_summary(self, summary: Dict[str, Any]) -> Dict[str, Any]:
     repo_info = summary['repository']
     java_stats = summary['java_files']
     warning_stats = summary['warnings']
