@@ -44,14 +44,12 @@ class SummaryGenerator:
         
         # Basic repository information
         summary = {
-            'location': repository_path,
-            'stat_of_repository': {            
+            'repository': {
+                'location': repository_path,
                 'analyzed_at': datetime.now().isoformat(),
-                'number_of_commits': len(results),
-                'avg_of_num_java_files':{'average_count': 0},
-                'avg_of_num_warnings': {'average_count': 0}
-            }        
-        }        
+                'commit_count': len(results)
+            }
+        }
         
         # Calculate Java file statistics
         java_stats = self._calculate_java_statistics(results)
@@ -81,24 +79,24 @@ class SummaryGenerator:
     def _empty_summary(self, repository_path: str) -> Dict[str, Any]:
         """Generate empty summary for repositories with no results."""
         return {
-            'location': repository_path,
-            'stat_of_repository': {            
+            'repository': {
+                'location': repository_path,
                 'analyzed_at': datetime.now().isoformat(),
-                'number_of_commits': len(results),
-                'avg_of_num_java_files':{'average_count': 0},
-                'avg_of_num_warnings': {'average_count': 0}
+                'commit_count': 0
             },
+            'java_files': {'average_count': 0},
+            'warnings': {'average_count': 0},
             'warning_statistics': {},
-            'formatted_summary': f'"location": "{repository_path}"\n"number_of_commits": 0\n"avg_of_num_java_files": 0\n"avg_of_num_warnings": 0\n"warning_statistics": {{}}'
+            'formatted_summary': f'"location": "{repository_path}"\n"commit_count": 0\n"average_java_files": 0\n"average_warnings": 0\n"warning_statistics": {{}}'
         }
     
     def _calculate_java_statistics(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Calculate Java file statistics across all commits."""
-        java_counts = [r['avg_of_num_java_files']['count'] for r in results]
-        total_lines = [r['avg_of_num_java_files']['total_lines'] for r in results]
+        java_counts = [r['java_files']['count'] for r in results]
+        total_lines = [r['java_files']['total_lines'] for r in results]
         
         return {
-            'avg_of_num_java_files': statistics.mean(java_counts) if java_counts else 0,
+            'average_count': statistics.mean(java_counts) if java_counts else 0,
             'median_count': statistics.median(java_counts) if java_counts else 0,
             'min_count': min(java_counts) if java_counts else 0,
             'max_count': max(java_counts) if java_counts else 0,
@@ -123,7 +121,7 @@ class SummaryGenerator:
             priority_counts[violation.get('priority', 0)] += 1
         
         return {
-            'stat_of_warnings': statistics.mean(warning_counts) if warning_counts else 0,
+            'average_count': statistics.mean(warning_counts) if warning_counts else 0,
             'median_count': statistics.median(warning_counts) if warning_counts else 0,
             'min_count': min(warning_counts) if warning_counts else 0,
             'max_count': max(warning_counts) if warning_counts else 0,
@@ -214,39 +212,26 @@ class SummaryGenerator:
             'average_clean_file_ratio': statistics.mean(file_quality_ratios) if file_quality_ratios else 0,
             'median_clean_file_ratio': statistics.median(file_quality_ratios) if file_quality_ratios else 0
         }
-    
-    def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
+    import json
+
+def _generate_formatted_summary(self, summary: Dict[str, Any]) -> str:
     repo_info = summary['repository']
     java_stats = summary['java_files']
     warning_stats = summary['warnings']
     rule_stats = summary['rule_statistics']
-    
+
     stat_of_warnings = {rule: stats['total_violations'] for rule, stats in rule_stats.items()}
-    
-    formatted = f'"location": "{repo_info["location"]}"\n'
-    formatted += '"stat_of_repository": {\n'
-    formatted += f'    "number_of_commits": {repo_info["java_files"]},\n'
-    formatted += f'    "avg_of_num_java_files": {java_stats["average_count"]:.1f},\n'
-    formatted += f'    "avg_of_num_warnings": {warning_stats["average_count"]:.1f},\n'
-    formatted += f'    "stat_of_warnings": {stat_of_warnings}\n'
-    formatted += '}'
-    
-    return formatted
-   '''
+
     output_dict = {
-            'location': repository_path,
-            'stat_of_repository': {            
-                'analyzed_at': datetime.now().isoformat(),
-                'number_of_commits': len(results),
-                'avg_of_num_java_files':{'average_count': 0},
-                'avg_of_num_warnings': {'average_count': 0}
-            }
-    '''
-    return {
-            'location': repository_path,
-            'stat_of_repository': {            
-                'analyzed_at': datetime.now().isoformat(),
-                'number_of_commits': len(results),
-                'avg_of_num_java_files':{'average_count': 0},
-                'avg_of_num_warnings': {'average_count': 0}
-            },
+        "location": repo_info["location"],
+        "stat_of_repository": {
+            "number_of_commits": repo_info["commit_count"],
+            "avg_of_num_java_files": round(java_stats["average_count"], 1),
+            "avg_of_num_warnings": round(warning_stats["average_count"], 1),
+        "stat_of_warnings": stat_of_warnings
+        }
+    }
+
+    return output_dict
+
+   
