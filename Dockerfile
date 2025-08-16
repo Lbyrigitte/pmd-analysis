@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install system dependencies including openjdk
 RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
+    openjdk-21-jdk \
     git \
     wget \
     unzip \
