@@ -1,12 +1,12 @@
 # Use Python 3.9 slim image as base
-FROM python:3.9-slim
+FROM python:3.9-slim-bookworm
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies including openjdk
 RUN apt-get update && apt-get install -y \
-    openjdk-21-jdk \
+    openjdk-17-jdk \
     git \
     wget \
     unzip \
