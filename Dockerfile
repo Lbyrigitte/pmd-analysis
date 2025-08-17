@@ -1,21 +1,21 @@
 # Use Python 3.9 slim image as base
-FROM python:3.9-slim-bookworm
+FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including openjdk
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    default-jdk \
     git \
     wget \
     unzip \
+    default-jdk \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set JAVA_HOME environment variable
-ENV JAVA_HOME=/usr/lib/jvm/java-1.19-openjdk-amd64
-ENV PATH="$JAVA_HOME/bin:$PATH"
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV PATH=$PATH:$JAVA_HOME/bin
 
 # Download and install PMD including rulesets
 ENV PMD_VERSION=7.15.0
