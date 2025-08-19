@@ -1,27 +1,39 @@
-﻿
-# pmd-analysis
+﻿# Repository Mining and Analysis by PMD
 
-## Introduction
+## Overview
 
-This's a program running on [Docker](https://www.docker.com/), which performs static analysis on each commit of a  selected Java Git repository using [PMD](https://pmd.github.io/) , and generates per-commit JSON reports along with a final summary report for software repository mining purposes.
-
-## Core functionalities
-
-- Support local and remote Git repositories 
-
-- Docker containerization support
-
-- Traverse Git history commit-by-commit
-    
-- Run PMD static analysis on each revision
-    
-- Output per-commit results as JSON files
-    
-- Generate a summary report showing commit count, average number of Java files, average warnings, and warning types
- 
-- Configurable input/output paths and ruleset
+This project provides a [Docker-based program](https://www.docker.com/) that performs static analysis on each commit of a selected Java Git repository using [PMD](https://pmd.github.io/). It is designed for **software repository mining** and generates detailed analysis results per commit, along with a final summary report.
 
 
+## Core Functionalities
+- Support for local and remote Git repositories
+- Dockerized execution
+- Commit-by-commit traversal of the full Git history
+- PMD static analysis performed on each revision
+- Per-commit JSON reports with detailed findings
+- Summary report generation including commit count, average number of Java files, average warnings, and types of warnings
+- Configurable input/output paths and rulesets for flexible setup
+
+
+## Update
+```
+example-ruleset.xml
+minimal-ruleset.xml
+simple-ruleset.xml
+ultra-minimal-ruleset.xml
+
+DOCKER_USAGE.md
+LOCAL_USAGE.md- Remove unnecessary/redundant files
+PMD_PATH_CONFIG.md
+
+docker-compose.yml
+
+./output
+./pmd/pmd-dist-7.15.0-bin/pmd-bin-7.15.0
+
+Dockerfile
+summary_generator.py
+```
 
 ## Project Structure
  (project-root)**pmd_miner**/    
@@ -152,14 +164,16 @@ ENV PATH="$PMD_HOME/bin:$PATH"
 RUN git clone https://github.com/Lbyrigitte/pmd-analysis.git /app
 
 # Copy requirements file
-COPY requirements.txt .
+#COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir \
+    GitPython==3.1.40 \
+    requests==2.31.0 \
+    click==8.1.7 \
+    tqdm==4.66.1 \
+    python-dateutil==2.8.2
 
-# Copy application code
-#COPY *.py ./
-#COPY *.xml ./
 
 # Create output directory
 RUN mkdir -p /app/output
@@ -169,30 +183,20 @@ ENTRYPOINT ["python", "main.py"]
 CMD ["--help"]
 ```
 
-**5. Build *requirements.txt*  in the same directory as Dockerfile**
-The *requirements.txt* :
-``` 
-    GitPython==3.1.40  
-    requests==2.31.0  
-    click==8.1.7  
-    tqdm==4.66.1  
-    python-dateutil==2.8.2
-```
-
- **6. Build the docker image**
+ **5. Build the docker image**
 
    `docker build --progress=plain -t pmd-analyzer .`
 **If the warning is like:current commit information was not captured by the build: failed to read current commit information with git rev-parse --is-inside-work-tree.It means this directory is not a git repository but it doesn't affect the execution.To avoid it:**
   
   `DOCKER_BUILDKIT=0 docker build --progress=plain -t pmd-analyzer.`
 
-**7. Test docker container**
+**6. Test docker container**
 
 `docker run -it --rm --entrypoint /bin/bash pmd-analyzer`
  `java -version`
  `python3 --version`
  `pmd --version`
-**8. Test docker container clone conditions**
+**7. Test docker container clone conditions**
 `docker run -it --rm --entrypoint /bin/bash pmd-analyzer `
 `ls /app`
 
@@ -252,11 +256,49 @@ python /app/main.py https://github.com/apache/commons-lang.git \
  - **View commit details**
 
 ` ls output/commits/`
+` cat output/commits/6627f7ad.json`
 
  - **View logs**
 
 ` cat output/logs/*.log`
+ 
+ **4. Format Description**
+#### Top-level fields
+- **`location`**: The repository path or URL to analyze
+- **`stat_of_repository`**: Repository statistics
+- **`stat_of_warnings`**: Warning statistics
 
+#### Repository Statistics(`stat_of_repository`)
+
+- **`number_of_commits`**: Total number of commits analyzed
+- **`avg_of_num_java_files`**: Average number of Java files
+- **`avg_of_num_warnings`**: Average number of warnings
+
+#### Warning Statistics (`stat_of_warnings`)
+Lists total violations by rule name:
+
+- **`EmptyCatchBlock`**: Number of empty catch block violations
+- **`SimplifyBooleanReturns`**: Number of Boolean return simplification violations
+- **`UnusedLocalVariable`**: Number of unused local variable violations
+- **`SystemPrintln`**: Number of System.out.println violations
+- **`UnnecessaryReturn`**: Number of unnecessary return violations
+
+#### Summary.json file in flat format:
+```json
+{
+  "location": "https://github.com/apache/commons-lang.git",
+  "stat_of_repository": {
+    "number_of_commits": 10,
+    "avg_of_num_java_files": 27.0,
+    "avg_of_num_warnings": 18.7
+  },
+  "stat_of_warnings": {
+    "EmptyCatchBlock": 99,
+    "SimplifyBooleanReturns": 18,
+    "UnusedLocalVariable": 70
+  }
+}
+```
 ## Output description
 ### Structure
 output/    
@@ -312,7 +354,3 @@ Welcome to submit issues and pull requests to improve this project.
 ## License
 
 This project uses the MIT license.
-
-
-
-
